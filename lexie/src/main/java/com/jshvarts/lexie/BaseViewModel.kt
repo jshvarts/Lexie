@@ -28,8 +28,11 @@ abstract class BaseViewModel<A : BaseAction, S : BaseState> : ViewModel() {
      * Dispatches an action. This is the only way to trigger a state change.
      */
     fun dispatch(action: A) {
-        println("Received action: $action")
-        actions.onNext(action)
+        actions.onNext(action).also {
+            if (Lexie.loggingEnabled) {
+                println(this::class.java.simpleName + ": Received action: $action")
+            }
+        }
     }
 
     override fun onCleared() {

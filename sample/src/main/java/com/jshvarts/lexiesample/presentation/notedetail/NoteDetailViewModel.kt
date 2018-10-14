@@ -1,13 +1,13 @@
 package com.jshvarts.lexiesample.presentation.notedetail
 
-import android.util.Log
+import com.jshvarts.lexie.BaseViewModel
+import com.jshvarts.lexie.Reducer
 import com.jshvarts.lexiesample.domain.NoteDetailUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
-import com.jshvarts.lexie.BaseViewModel
-import com.jshvarts.lexie.Reducer
+import timber.log.Timber
 
 class NoteDetailViewModel(initialState: State?,
                           private val noteDetailUseCase: NoteDetailUseCase)
@@ -46,15 +46,12 @@ class NoteDetailViewModel(initialState: State?,
                             .startWith(Change.Loading)
                 }
 
-        // to handle multiple Changes, merge them into a single stream using Observable.merge as follows:
-        // val allChanges = Observable.merge(loadNoteChange)
-
         disposables += loadNoteChange
                 .scan(initialState, reducer)
                 .filter { !it.isIdle && !it.isLoading }
                 .distinctUntilChanged()
-                .doOnNext { println("Received state: $it") }
+                .doOnNext { Timber.d("Received state: $it") }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(state::setValue) { Log.e(this::class.java.simpleName, it.message, it) }
+                .subscribe(state::setValue, Timber::e)
     }
 }

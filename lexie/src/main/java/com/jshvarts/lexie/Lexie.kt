@@ -1,5 +1,10 @@
 package com.jshvarts.lexie
 
 object Lexie {
-    var loggingEnabled = false
+    internal var loggingEnabled = false
+        private set
+
+    fun enableLogging() {
+        loggingEnabled = true
+    }
 }

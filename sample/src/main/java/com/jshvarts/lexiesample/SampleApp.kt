@@ -10,6 +10,6 @@ class SampleApp : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
-        Lexie.loggingEnabled = true
+        Lexie.enableLogging()
     }
 }

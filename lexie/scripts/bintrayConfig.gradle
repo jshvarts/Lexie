@@ -13,7 +13,7 @@
 if (project.hasProperty('publish') && project.getProperty('publish')) {
   // Bintray Params
   ext {
-    bintrayRepo = rootProject.ext.libGithubRepo
+    bintrayRepo = 'lexie'
     bintrayName = rootProject.ext.libBintrayName
 
     publishedGroupId = GROUP

@@ -22,6 +22,17 @@ allprojects {
     }
 }
 
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            forcedModules = [
+                    "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
+                    "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+            ]
+        }
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
@@ -35,7 +46,7 @@ ext {
 
     // Lexie Library
     libVersionCode = 1
-    libVersionName = '0.1.0'
+    libVersionName = '0.3.0'
 
     libPomUrl = 'https://github.com/jshvarts/Lexie'
     libGithubRepo = 'jshvarts/Lexie'

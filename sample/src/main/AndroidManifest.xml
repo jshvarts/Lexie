@@ -20,7 +20,12 @@
         <activity
             android:name=".presentation.notedetail.NoteDetailActivity"
             android:parentActivityName=".presentation.notelist.NoteListActivity"
-            android:label="@string/label_note_detail" />
+            android:label="@string/label_note_detail">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".presentation.notelist.NoteListActivity" />
+        </activity>
     </application>
 
 </manifest>

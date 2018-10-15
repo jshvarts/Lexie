@@ -46,7 +46,7 @@ ext {
 
     // Lexie Library
     libVersionCode = 1
-    libVersionName = '0.5.1'
+    libVersionName = '0.5.2'
 
     libPomUrl = 'https://github.com/jshvarts/Lexie'
     libGithubRepo = 'jshvarts/Lexie'

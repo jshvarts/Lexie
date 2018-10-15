@@ -30,7 +30,9 @@ abstract class BaseViewModel<A : BaseAction, S : BaseState> : ViewModel() {
      * Dispatches an action. This is the only way to trigger a state change.
      */
     fun dispatch(action: A) {
-        println("$tag: Received action: $action")
+        if (Lexie.loggingEnabled) {
+            println("$tag: Received action: $action")
+        }
         actions.onNext(action)
     }
 

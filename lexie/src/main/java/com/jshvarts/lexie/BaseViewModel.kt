@@ -18,6 +18,8 @@ abstract class BaseViewModel<A : BaseAction, S : BaseState> : ViewModel() {
 
     protected val state = MutableLiveData<S>()
 
+    private val tag by lazy { javaClass.simpleName }
+
     /**
      * Returns the current state. It is equal to the last value returned by the store's reducer.
      */
@@ -28,7 +30,7 @@ abstract class BaseViewModel<A : BaseAction, S : BaseState> : ViewModel() {
      * Dispatches an action. This is the only way to trigger a state change.
      */
     fun dispatch(action: A) {
-        println(this::class.java.simpleName + ": Received action: $action")
+        println("$tag: Received action: $action")
         actions.onNext(action)
     }
 

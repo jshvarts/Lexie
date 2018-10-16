@@ -1,8 +1,8 @@
 package com.jshvarts.lexiesample.domain
 
+import com.jshvarts.lexiesample.data.NoteRepository
 import io.reactivex.Single
 
 class NoteListUseCase {
-    fun loadNotes(): Single<List<Note>> =
-            Single.just(listOf(Note(1, "note1"), Note(2, "note2")))
+    fun loadNotes(): Single<List<Note>> = Single.just(NoteRepository.notes)
 }

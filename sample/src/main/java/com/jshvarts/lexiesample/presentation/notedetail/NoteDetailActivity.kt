@@ -15,7 +15,7 @@ const val EXTRA_DETAIL_ID = "notedetail.NoteDetailActivity.ID"
 class NoteDetailActivity : AppCompatActivity() {
     private lateinit var viewModel: NoteDetailViewModel
 
-    val noteId by lazy {
+    private val noteId by lazy {
         intent.getLongExtra(EXTRA_DETAIL_ID, 0)
     }
 

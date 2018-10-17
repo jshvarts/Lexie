@@ -6,4 +6,6 @@ import com.jshvarts.lexie.BaseState
 data class State(val note: Note? = null,
                  val isIdle: Boolean = false,
                  val isLoading: Boolean = false,
-                 val isError: Boolean = false) : BaseState
+                 val isLoadError: Boolean = false,
+                 val isNoteDeleted: Boolean = false,
+                 val isDeleteError: Boolean = false) : BaseState

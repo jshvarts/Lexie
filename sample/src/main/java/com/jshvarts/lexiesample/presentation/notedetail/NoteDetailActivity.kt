@@ -6,11 +6,12 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.jshvarts.lexiesample.R
+import com.jshvarts.lexiesample.domain.DeleteNoteUseCase
 import com.jshvarts.lexiesample.domain.Note
 import com.jshvarts.lexiesample.domain.NoteDetailUseCase
 import kotlinx.android.synthetic.main.note_detail.*
 
-const val EXTRA_DETAIL_ID = "notedetail.NoteDetailActivity.ID"
+const val EXTRA_DETAIL_ID = "notedetail.ID"
 
 class NoteDetailActivity : AppCompatActivity() {
     private lateinit var viewModel: NoteDetailViewModel
@@ -23,8 +24,8 @@ class NoteDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.note_detail)
 
-        // Normally the Use Case should be injected into NoteDetailViewModelFactory instead
-        viewModel = ViewModelProviders.of(this, NoteDetailViewModelFactory(null, NoteDetailUseCase()))
+        // Normally the ViewModelFactory should be injected UseCases injected into it
+        viewModel = ViewModelProviders.of(this, NoteDetailViewModelFactory(null, NoteDetailUseCase(), DeleteNoteUseCase()))
                 .get(NoteDetailViewModel::class.java)
 
         viewModel.observableState.observe(this@NoteDetailActivity, Observer { state ->
@@ -34,13 +35,19 @@ class NoteDetailActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             viewModel.dispatch(Action.LoadNoteDetail(noteId))
         }
+
+        deleteNoteButton.setOnClickListener {
+            viewModel.dispatch(Action.DeleteNote(noteId))
+        }
     }
 
     private fun renderState(state: State) {
         with(state) {
             when {
-                isError -> renderLoadNoteDetailError()
+                isLoadError -> renderLoadNoteDetailError()
+                isDeleteError -> renderNoteDeleteError()
                 note != null -> renderNoteDetailState(note)
+                isNoteDeleted -> renderNoteDeleted()
             }
         }
     }
@@ -52,5 +59,13 @@ class NoteDetailActivity : AppCompatActivity() {
 
     private fun renderLoadNoteDetailError() {
         Toast.makeText(this, R.string.error_loading_note, Toast.LENGTH_LONG).show()
+    }
+
+    private fun renderNoteDeleteError() {
+        Toast.makeText(this, R.string.error_deleting_note, Toast.LENGTH_LONG).show()
+    }
+
+    private fun renderNoteDeleted() {
+        finish()
     }
 }

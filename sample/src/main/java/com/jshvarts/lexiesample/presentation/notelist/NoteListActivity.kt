@@ -36,10 +36,11 @@ class NoteListActivity : AppCompatActivity() {
         viewModel.observableState.observe(this@NoteListActivity, Observer { state ->
             state?.let { renderState(state) }
         })
+    }
 
-        if (savedInstanceState == null) {
-            viewModel.dispatch(Action.LoadNotes)
-        }
+    override fun onResume() {
+        super.onResume()
+        viewModel.dispatch(Action.LoadNotes)
     }
 
     private fun renderState(state: State) {

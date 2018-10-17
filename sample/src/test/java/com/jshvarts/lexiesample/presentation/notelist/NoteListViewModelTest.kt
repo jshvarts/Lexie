@@ -39,7 +39,7 @@ class NoteListViewModelTest {
         val noteList = listOf(Note(1L, "dummy text"))
         val successState = State(noteList)
 
-        whenever(noteListUseCase.loadNotes()).thenReturn(Single.just(noteList))
+        whenever(noteListUseCase.loadAll()).thenReturn(Single.just(noteList))
 
         // WHEN
         testSubject.dispatch(Action.LoadNotes)
@@ -55,7 +55,7 @@ class NoteListViewModelTest {
 
     @Test fun `Given notes failed to load, when action LoadNotes is received, then State contains error`() {
         // GIVEN
-        whenever(noteListUseCase.loadNotes()).thenReturn(Single.error(RuntimeException()))
+        whenever(noteListUseCase.loadAll()).thenReturn(Single.error(RuntimeException()))
         val errorState = State(isError = true)
 
         // WHEN

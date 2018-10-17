@@ -38,7 +38,7 @@ class NoteListViewModel(initialState: State?,
     private fun bindActions() {
         val loadNotesChange = actions.ofType<Action.LoadNotes>()
                 .switchMap {
-                    loadNoteListUseCase.loadNotes()
+                    loadNoteListUseCase.loadAll()
                             .subscribeOn(Schedulers.io())
                             .toObservable()
                             .map<Change> { Change.Notes(it) }

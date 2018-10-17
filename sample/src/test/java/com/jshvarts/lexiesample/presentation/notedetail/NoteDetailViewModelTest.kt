@@ -2,13 +2,12 @@ package com.jshvarts.lexiesample.presentation.notedetail
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.lifecycle.Observer
+import com.jshvarts.lexiesample.domain.DeleteNoteUseCase
 import com.jshvarts.lexiesample.domain.Note
 import com.jshvarts.lexiesample.domain.NoteDetailUseCase
 import com.jshvarts.lexiesample.presentation.RxTestSchedulerRule
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockito_kotlin.*
+import io.reactivex.Completable
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Rule
@@ -24,14 +23,15 @@ class NoteDetailViewModelTest {
 
     private lateinit var testSubject: NoteDetailViewModel
 
-    private val idleState = State(isIdle = true)
-
     private val noteDetailUseCase = mock<NoteDetailUseCase>()
+
+    private val deleteNoteUseCase = mock<DeleteNoteUseCase>()
 
     private val observer = mock<Observer<State>>()
 
     @Before fun setUp() {
-        testSubject = NoteDetailViewModel(idleState, noteDetailUseCase)
+        val idleState = State(isIdle = true)
+        testSubject = NoteDetailViewModel(idleState, noteDetailUseCase, deleteNoteUseCase)
         testSubject.observableState.observeForever(observer)
     }
 
@@ -53,7 +53,7 @@ class NoteDetailViewModelTest {
 
     @Test fun `Given note failed to load, when action LoadNoteDetail is received, then State contains error`() {
         // GIVEN
-        val errorState = State(isError = true)
+        val loadErrorState = State(isLoadError = true)
 
         whenever(noteDetailUseCase.findById(NOTE_ID)).thenReturn(Single.error(RuntimeException()))
 
@@ -62,7 +62,65 @@ class NoteDetailViewModelTest {
         testSchedulerRule.triggerActions()
 
         // THEN
-        verify(observer).onChanged(errorState)
+        verify(observer).onChanged(loadErrorState)
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test fun `Given note successfully deleted, when action DeleteNote is received, then emits note deleted State`() {
+        // GIVEN
+        val note = Note(NOTE_ID, NOTE_TEXT)
+        val noteDeletedState = State(isNoteDeleted = true)
+
+        whenever(noteDetailUseCase.findById(NOTE_ID)).thenReturn(Single.just(note))
+        whenever(deleteNoteUseCase.delete(note)).thenReturn(Completable.complete())
+
+        // WHEN
+        testSubject.dispatch(Action.DeleteNote(NOTE_ID))
+        testSchedulerRule.triggerActions()
+
+        // THEN
+        inOrder(noteDetailUseCase, deleteNoteUseCase) {
+            verify(noteDetailUseCase).findById(NOTE_ID)
+            verify(deleteNoteUseCase).delete(note)
+        }
+        verify(observer).onChanged(noteDeletedState)
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test fun `Given note for deletion failed to load, when action DeleteNote is received, then emits delete note error State`() {
+        // GIVEN
+        val deleteErrorState = State(isDeleteError = true)
+        whenever(noteDetailUseCase.findById(NOTE_ID)).thenReturn(Single.error(RuntimeException()))
+
+        // WHEN
+        testSubject.dispatch(Action.DeleteNote(NOTE_ID))
+        testSchedulerRule.triggerActions()
+
+        // THEN
+        verify(noteDetailUseCase).findById(NOTE_ID)
+        verify(deleteNoteUseCase, never()).delete(any())
+        verify(observer).onChanged(deleteErrorState)
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test fun `Given note deletion failed, when action DeleteNote is received, then emits delete note error State`() {
+        // GIVEN
+        val note = Note(NOTE_ID, NOTE_TEXT)
+        val deleteErrorState = State(isDeleteError = true)
+
+        whenever(noteDetailUseCase.findById(NOTE_ID)).thenReturn(Single.just(note))
+        whenever(deleteNoteUseCase.delete(note)).thenReturn(Completable.error(RuntimeException()))
+
+        // WHEN
+        testSubject.dispatch(Action.DeleteNote(NOTE_ID))
+        testSchedulerRule.triggerActions()
+
+        // THEN
+        inOrder(noteDetailUseCase, deleteNoteUseCase) {
+            verify(noteDetailUseCase).findById(NOTE_ID)
+            verify(deleteNoteUseCase).delete(note)
+        }
+        verify(observer).onChanged(deleteErrorState)
         verifyNoMoreInteractions(observer)
     }
 }
